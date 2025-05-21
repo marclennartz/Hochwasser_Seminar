@@ -8,108 +8,6 @@
 # ---
 
 
-### ------ Introduction to R ------
-
-### ------ Data types and structures in R ------
-## ---- Data types ----
-
-x <- 10.1 # numeric: floating point number
-x <- 0  # numeric: integer
-
-x1 <- "name" # character
-x2 <- TRUE   # logical / boolean
-
-# rules for variable names: 
-# 1. A variable name must start with a letter and can be a combination of letters, digits, period(.)
-#    and underscore(_). If it starts with period(.), it cannot be followed by a digit.
-# 2. A variable name cannot start with a number or underscore (_)
-# 3. Variable names are case-sensitive (age, Age and AGE are three different variables)
-# 4. Reserved words cannot be used as variable names (like TRUE, FALSE, NULL, if...)
-
-
-is.numeric(x)
-is.integer(x)  # is it a integer number?
-is.character(x)
-is.logical(x)
-
-
-# type conversion
-as.character(10)
-as.numeric('1.52') # convert from character to number
-as.numeric('xs')   # failed
-as.integer(10.54)  # convert to integer
-as.logical(5)      # TRUE: as long as it is a non-zero numerical value 
-
-# convert boolean / logical value to integer 
-
-as.numeric(TRUE)  # 1
-as.numeric(FALSE) # 0
-
-1 + TRUE
-2 - TRUE * 2
-2 - FALSE
-
-## ----- Data structures in R --------
-
-# Vector ------
-
-v1 <- c(1, 2, 5, 3, 6, -2, 4)  # numeric vector, with 7 elements
-
-v2 <- c(TRUE, FALSE, TRUE)     # logical vector, with 3 elements
-v3 <- c("Name1", "Name2")      # character vector, with 2 elements
-
-v4 <- 1:5  # a numeric sequence from 1 to 5 with a step of 1
-v4 <- seq(1, 10, by = 2)
-
-
-v5 <- 1:20
-v5 <- seq(from = 1, to = 20, by = 2) # sequence
-
-
-# data.frame ----
-# A data frame is more general than a matrix in 
-# that different columns (vectors) can contain different modes of data
-
-# create data.frame from a couple of vectors, with the same length
-patientID <- c(1, 2, 3, 4)
-age <- c(25, 34, 28, 52)
-diabetes <- c("Type1", "Type2", "Type1", "Type1")
-status <- c("Poor", "Improved", "Excellent", "Poor")
-patientdata <- data.frame(patientID, age, diabetes, status)
-patientdata
-
-# refer to the individual column in the data.frame
-patientdata$age   # access specific column with $ sign
-patientdata$diabetes
-
-
-
-#### ---- getting data into R ----------
-# data input and output
-# from keyboard ------
-data_example <- c(6,38, 30) # data.frame
-
-# from text file ------
-# import data as a data frame from a text file
-df <- read.table(
-  # file path and name; we use slash sign / here 
-  file = 'D:/FloodRiskSeminar/data/Example_data.csv', 
-  header = TRUE, sep = ','
-)
-
-?read.table  # find more about the function and parameters
-
-write.table(
-  df, 
-  file = 'D:/test.csv',
-  col.names = TRUE, row.names = FALSE, quote = F, append = F, sep = ','
-  # col.names: whether the column names added to the first row in the output file?
-  # row.names: should the row names be printed as the first column in the output file?
-  # quote: should quotation sign be added to enclose character variables?
-  # append: output mode
-  # sep: separator
-)
-
 
 #### ------ Functions --------
 
@@ -472,76 +370,15 @@ aggregate(age~status, df, FUN = mean)
 # exercise 1. ------
 # getting data into R and find data file here: 
 #     data/Example_data.csv, use read.table() function
-df <- read.table(
-  # 
-  # fill the parameters here
-  "D:/FloodRiskSeminar/data/Example_data.csv",
-  header = T, sep = ","
-)
-
 
 # exercise 2. ------
 # How many days are there with discharge exceeding (>=) 8000? 
 
-# solution 1: 
-sum(df$discharge >= 8000)  # TRUE: 1; FALSE: 0
-
-# solution 2:
-df_subset <- df[df$discharge >= 8000, ] # filter the data frame based on discharge column 
-dim(df_subset)   # result the dimension of the data frame, number of rows and cols
-
-# solution 3:
-
-discharge <- df$discharge  # access the discharge column
-
-number = 0    # define a variable to count
-for (dis in discharge) {  # iterate over the elements in discharge vector
-  if (dis >= 8000) {
-    number = number + 1 # increment number as long as one discharge value exceeding 8000
-  }
-}
-number
-
-
 # exercise 3. ------
 # Which month has the most discharge days exceeding 8000? 
 
-# solution 1: 
-exceed8000 <- function(x) {
-  # define a function here, 
-  # x: the only parameter: a numeric vector
-  # this function is designed to count the number of values exceeding 8000
-  number = sum(x >= 8000)
-  return(number)  # return the count
-}
-
-# data aggregation: group the data frame based on month variable, and then apply the function exceed8000
-# to discharge column for each group and return a data frame
-df_out <- aggregate(discharge ~ month, df, FUN = exceed8000)
-df_out[order(df_out$discharge, decreasing = T),] # sort the data frame
-
-# solution 2:
-# use for loops
-
-numbers <- NULL  # define a null vector, used to store the counts for 12 months
-for (i in 1:12) { # iterate over each month (in total 12 months)
-  df_subset <- df[df$month == i, ] # filter the data frame, with month only equal to month i
-  numbers[i] <- sum(df_subset$discharge >= 8000) # adding value to the null vector;
-}
-
-# create a data frame from month vector and numbers vector
-out <- data.frame(
-  month = 1:12,
-  numbers
-)
-out[order(out$numbers, decreasing = T), ]  # sort the data frame based on numbers column
-
 # exercise 4. ------
 # Derive the annual maximum discharge series 
-
-aggregate(discharge~year, df, FUN = max)  # aggregation, group variable: year; operating variable: discharge
-
-
 
 # exercise 5. ------
 # Figure out in which day (date) the discharge reaches the maxima for each year 
