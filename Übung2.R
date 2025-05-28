@@ -299,30 +299,139 @@ aggregate(age~diabetes, df, FUN = mean)
 aggregate(age~diabetes, df, FUN = max)
 aggregate(age~status, df, FUN = mean)
 
-
 ### ------- Exercise with R - R basics -----------
 
 # exercise 1. ------
 # getting data into R and find data file here: 
 #     data/Example_data.csv, use read.table() function
+df <- read.table(
+  # 
+  # fill the parameters here
+  "D:/FloodRiskSeminar/data/Example_data.csv",
+  header = T, sep = ","
+)
+
 
 # exercise 2. ------
 # How many days are there with discharge exceeding (>=) 8000? 
 
+# solution 1: 
+sum(df$discharge >= 8000)  # TRUE: 1; FALSE: 0
+
+# solution 2:
+df_subset <- df[df$discharge >= 8000, ] # filter the data frame based on discharge column 
+dim(df_subset)   # result the dimension of the data frame, number of rows and cols
+
+# solution 3:
+
+discharge <- df$discharge  # access the discharge column
+
+number = 0    # define a variable to count
+for (dis in discharge) {  # iterate over the elements in discharge vector
+  if (dis >= 8000) {
+    number = number + 1 # increment number as long as one discharge value exceeding 8000
+  }
+}
+number
+
+
 # exercise 3. ------
 # Which month has the most discharge days exceeding 8000? 
+
+# solution 1: 
+exceed8000 <- function(x) {
+  # define a function here, 
+  # x: the only parameter: a numeric vector
+  # this function is designed to count the number of values exceeding 8000
+  number = sum(x >= 8000)
+  return(number)  # return the count
+}
+
+# data aggregation: group the data frame based on month variable, and then apply the function exceed8000
+# to discharge column for each group and return a data frame
+df_out <- aggregate(discharge ~ month, df, FUN = exceed8000)
+df_out[order(df_out$discharge, decreasing = T),] # sort the data frame
+
+# solution 2:
+# use for loops
+
+numbers <- NULL  # define a null vector, used to store the counts for 12 months
+for (i in 1:12) { # iterate over each month (in total 12 months)
+  df_subset <- df[df$month == i, ] # filter the data frame, with month only equal to month i
+  numbers[i] <- sum(df_subset$discharge >= 8000) # adding value to the null vector;
+}
+
+# create a data frame from month vector and numbers vector
+out <- data.frame(
+  month = 1:12,
+  numbers
+)
+out[order(out$numbers, decreasing = T), ]  # sort the data frame based on numbers column
 
 # exercise 4. ------
 # Derive the annual maximum discharge series 
 
+aggregate(discharge~year, df, FUN = max)  # aggregation, group variable: year; operating variable: discharge
+
+
+
 # exercise 5. ------
 # Figure out in which day (date) the discharge reaches the maxima for each year 
+
+# solution 1
+range(df$year)
+years <- seq(
+  min(df$year),
+  max(df$year),
+  1
+)
+
+years <- seq(
+  head(df$year, 1),
+  tail(df$year, 1),
+  1
+)
+
+years <- unique(df$year)
+
+
+out <- data.frame(
+  year = NULL,
+  month = NULL,
+  day = NULL,
+  discharge = NULL
+)
 
 # split the data frame into subset dfs based on year column
 # and the sort the subset df based on discharge column in decreasing order, 
 # then retrieve the first row in the sorted subset df
 
+for (i in 1:length(years)) {
+  df_temp <- df[df$year == years[i], ]  # subset data frame for one specific year
+  df_temp <- df_temp[order(df_temp$discharge, decreasing = T), ] # sorting the data frame based on discharge
+  out <- rbind(out, head(df_temp, 1))   # get the first row of the sorted data frame 
+}
 
-# know more about date in R:
-# https://bookdown.org/rdpeng/rprogdatascience/dates-and-times.html
+
+# solution 2
+
+df_max <- aggregate(discharge~year, df, FUN = which.max)
+df_max$first_day <- as.Date(paste0(df_max$year, "-01-01"))
+df_max$date_max <- df_max$first_day + df_max$discharge - 1
+
+
+x <- c(5, 1, 3, 2, 1)
+which.max(x)
+
+x <- c(12, 9.0, 11, 20)
+which.max(x)
+
+
+as.Date("2024-05-24")  # convert character to date type
+as.Date("2024-05-24") - 1  # get the date of yesterday 
+as.Date("2024-05-24") + 5  # get the date 5 days after today
+
+as.Date("1845-01-01") + 5  
+
+as.Date("2024-05-24") - as.Date("2024-01-01")
 
