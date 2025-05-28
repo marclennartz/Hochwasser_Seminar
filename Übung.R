@@ -267,27 +267,48 @@ str(df)      # check the structure of the df
 # getting data into R properly and find data file here: 
 #     data/Example_data.csv, use read.table() function;
 #     hint: take care of the parameters. first row as column name and the columns are separated by comma ","
+df <- read.table(
+  file = "D:/FloodRiskSeminar/data/Example_data.csv",
+  header = T, sep = ","
+)
 
 
 # exercise 2. ------
 # Check the dimensions (or shape) of the imported data
 #   number of rows and columns
 
+dim(df)
+
+length(df$month)
 
 # exercise 3. ------
 # How many years this data set covers? Starting year? End year?
+
+df$year[1]
+
+tail(df$year, 1)
 
 
 
 # exercise 4. ------
 # Derive the maximum, minimum, mean value, standard deviation of the discharge column
 
+df$discharge
+
+max(df$discharge)
+min()
+mean()
 
 # exercise 5. ------
 # Derive the maximum, minimum, mean value, standard deviation 
 #     of the first 365 elements in discharge column
 #hint: here we would have to extract the first 365 elements (first year) in discharge column
 
+ts = head(df$discharge, 365)
+max(ts)
+min()
+mean()
+sd()
 
 # exercise 6. ------
 # Export the first 365 rows of df into text file
@@ -297,4 +318,8 @@ str(df)      # check the structure of the df
 #     give the output file name as "output"
 #     don't forget the file extension: .csv or .txt
 
-
+write.table(
+  head(df, 365),
+  file = "D:/output.csv",
+  col.names = TRUE, row.names = FALSE, sep = ";"
+)
