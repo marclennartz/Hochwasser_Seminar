@@ -255,7 +255,7 @@ probability
 #    using plot() and points()
 
 AMS$m_rank = rank(AMS$discharge) # rank of the values
-AMS$P = round(ams$m_rank / (1 + dim(AMS)[1]), 4) # empirical probability
+AMS$P = round(AMS$m_rank / (1 + dim(AMS)[1]), 4) # empirical probability
 AMS$ReturnPeriod_T = round(1 / (1 - AMS$P), 1) # # empirical return period
 AMS
 
