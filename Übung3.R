@@ -236,7 +236,7 @@ paras = GEV_mle$results$par
 # 4. Derive the 100-year discharge
 
 return_period <- 100
-probability <- 1 - 1 / rp  ## CDF
+probability <- 1 - 1 / return_period  ## CDF
 
 qevd(probability, loc = paras[1], scale = paras[2], shape = paras[3], type = "GEV")
 
